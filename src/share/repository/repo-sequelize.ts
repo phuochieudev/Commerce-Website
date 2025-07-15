@@ -1,15 +1,13 @@
-import { Sequelize, where } from "sequelize";
-import { PagingDTO } from "../../../../share/model/paging";
-import { IRepository } from "../../interface";
-import { CategoryCondDTO, CategoryUpdateDTO } from "../../model/dto";
-import { Category, CategorySchema } from "../../model/model";
-import { ModelStatus } from "../../../../share/model/base-model";
+import { Sequelize } from "sequelize";
+import { IRepository } from "../interface";
+import { PagingDTO } from "../model/paging";
 import { Op } from "sequelize";
+import { ModelStatus } from "../model/base-model";
 
-export class MYSQLCategoryRepository implements IRepository {
+export abstract class BaseRepositorySequelize< Entity, Cond, UpdateDTO> implements IRepository<Entity, Cond, UpdateDTO> {
     constructor(private readonly sequelize: Sequelize, private readonly modelName: string){}
 
-    async get(id: string): Promise<Category | null> {
+    async get(id: string): Promise<Entity | null> {
         const data = await this.sequelize.models[this.modelName].findByPk(id);
         if(!data){
             return null;
@@ -20,10 +18,10 @@ export class MYSQLCategoryRepository implements IRepository {
             children: [],
             createdAt: persistenceData.created_at,
             updatedAt: persistenceData.updated_at,
-        }  as Category;
+        }  as Entity;
     }
 
-    async list(cond: CategoryCondDTO, paging: PagingDTO): Promise<Array<Category>> {
+    async list(cond: Cond, paging: PagingDTO): Promise<Array<Entity>> {
         const { page, limit } = paging;
 
         const condSQL = {...cond,status: {[Op.ne]: ModelStatus.DELETED}}
@@ -36,13 +34,13 @@ export class MYSQLCategoryRepository implements IRepository {
         return rows.map((row) => row.get({plain: true}));
     }   
 
-    async insert(data: Category): Promise<boolean> {
-        await this.sequelize.models[this.modelName].create(data);
+    async insert(data: Entity): Promise<boolean> {
+        await this.sequelize.models[this.modelName].create(data as any);
         return true;
     }
 
-    async update(id: string, data: CategoryUpdateDTO): Promise<boolean> {
-        await this.sequelize.models[this.modelName].update(data, {where: {id}});
+    async update(id: string, data: UpdateDTO): Promise<boolean> {
+        await this.sequelize.models[this.modelName].update(data as any, {where: {id}});
         return true;   
     }
 
