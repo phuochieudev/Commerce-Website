@@ -2,6 +2,7 @@ import 'module-alias/register';
 
 import express from "express";
 import { config } from "dotenv";
+import * as swaggerUi from 'swagger-ui-express';
 import { setupCategoryHexagon } from "@modules/category";
 import { sequelize } from "@share/component/sequelize";
 import { setupBrandHexagon } from "@modules/brand";
@@ -17,6 +18,7 @@ import { setupUserAddressHexagon } from "@modules/user-address";
 import { setupProductVariantHexagon } from "@modules/product-variant";
 import { MYSQLProductRepository } from "@modules/product/infras/repository/sequelize";
 import { modelName as productModelName } from "@modules/product/infras/repository/sequelize/dto";
+import { buildSwaggerDocument } from '@share/transport/swagger';
 
 config();
 
@@ -62,7 +64,14 @@ config();
   app.use('/v1', setupUserAddressHexagon(sequelize));
   app.use('/v1', setupProductVariantHexagon(sequelize));
 
+  const swaggerDocument = buildSwaggerDocument(port);
+  app.get('/swagger.json', (req, res) => {
+    res.json(swaggerDocument);
+  });
+  app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
   app.listen(port, () => {
     console.log(`Server is running on port http://localhost:${port}`);
+    console.log(`Swagger UI available at http://localhost:${port}/swagger`);
   });
 })();
