@@ -1,15 +1,20 @@
-import { ICategoryUsecase } from "../../interface";
+import { CreateCommand, DeleteCommand, getDetailQuery, ListQuery, UpdateCommand } from "../../interface";
 import { CategoryCondDTOSchema, CategoryCreateSchema, CategoryUpdateSchema } from "../../model/dto";
 import {Request, Response} from "express";
-import { Category } from "../../model/model";
+import { Category } from "../../model/category";
+import { ICommandHandler, IQueryHandler } from "../../../../share/interface";
 
 export class CategoryHttpService {
-
-    constructor(private readonly useCase: ICategoryUsecase) {}
+    constructor(
+      private readonly createCommandHandler: ICommandHandler<CreateCommand, string>,
+      private readonly getDetailQueryHandler: IQueryHandler<getDetailQuery, Category>,
+      private readonly updateCmdHandler: ICommandHandler<UpdateCommand, boolean>,
+      private readonly deleteCmdHandler: ICommandHandler<DeleteCommand, boolean>,
+      private readonly listQueryHandler: IQueryHandler<ListQuery, Category[]>
+    ) {}
 
     async createANewCategoryAPI(req: Request, res: Response) {
         const {success, data, error} =  CategoryCreateSchema.safeParse(req.body);
-        
             if(!success){
               res.status(400).json({
               message: error.message,
@@ -17,21 +22,19 @@ export class CategoryHttpService {
               return;
             }
 
-       const result = await this.useCase.createANewCategory(data);
+       const result = await this.createCommandHandler.execute({ dto: data });
        res.status(201).json({ data: result });
     }
 
     async getDetailCategoryAPI(req: Request, res: Response) {
       const { id } = req.params;
-
-      const result = await this.useCase.getDetailCategory(id);
+      const result = await this.getDetailQueryHandler.query({ id });
       res.status(200).json({ data: result });
     }
 
     async updateCategoryAPI(req: Request, res: Response) {
       const { id } = req.params;
       const { success, data, error } = CategoryUpdateSchema.safeParse(req.body);
-
       if (!success) {
         res.status(400).json({
           message: error.message,
@@ -39,14 +42,13 @@ export class CategoryHttpService {
         return;
       }
 
-      const result = await this.useCase.updateCategory(id, data);
+      const result = await this.updateCmdHandler.execute({ id, dto: data });
       res.status(200).json({ data: result });
     }
 
     async deleteCategoryAPI(req: Request, res: Response) {
       const { id } = req.params;
-
-      const result = await this.useCase.deleteCategory(id);
+      const result = await this.deleteCmdHandler.execute({ id, isHardDelete: false });
       res.status(200).json({ data: result });
     }
 
@@ -57,7 +59,7 @@ export class CategoryHttpService {
       };
 
       const cond = CategoryCondDTOSchema.parse(req.query);
-      const result = await this.useCase.listCategories(cond, pagging);
+      const result = await this.listQueryHandler.query({ cond, paging: pagging });
       const categoriesTree = this.buildTree(result);
       res.status(200).json({data: categoriesTree, pagging, filter: cond});
     }
@@ -78,10 +80,10 @@ export class CategoryHttpService {
           categoriesTree.push(category);
         }else{
           const children = mapChildren.get(category.parentId);
-          children ? children.push(category) : mapChildren.set(category.parentId, [category]);  
+          children ? children.push(category) : mapChildren.set(category.parentId, [category]);
         }
       }
 
       return categoriesTree;
-    } 
+    }
 }
