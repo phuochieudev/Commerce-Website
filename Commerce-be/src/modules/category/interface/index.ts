@@ -1,5 +1,6 @@
-import { Category } from "../model/model";
+import { IRepository } from "../../../share/interface";
 import { PagingDTO } from "../../../share/model/paging";
+import { Category } from "../model/category";
 import { CategoryCondDTO, CategoryCreateDTO, CategoryUpdateDTO } from "../model/dto";
 
 export interface ICategoryUsecase {
@@ -10,15 +11,27 @@ export interface ICategoryUsecase {
    deleteCategory(id: string): Promise<boolean>;
  }
 
-export interface IRepository extends IQueryRepository, ICommandRepository {}
+export interface CreateCommand {
+  dto: CategoryCreateDTO;
+}
 
-export interface IQueryRepository {
-    get(id: string): Promise<Category | null>;
-    list(cond: CategoryCondDTO ,paging: PagingDTO): Promise<Array<Category>>;
- }
- 
-export interface ICommandRepository {
-    insert(data: Category): Promise<boolean>;
-    update(id: string, data: CategoryUpdateDTO): Promise<boolean>;
-    delete(id: string, isHard: boolean): Promise<boolean>;
- }
+export interface getDetailQuery {
+  id: string;
+}
+
+export interface UpdateCommand {
+  id: string;
+  dto: CategoryUpdateDTO;
+}
+
+export interface DeleteCommand {
+  id: string;
+  isHardDelete: boolean;
+}
+
+export interface ListQuery {
+  cond: CategoryCondDTO;
+  paging: PagingDTO;
+}
+
+export interface ICategoryRepository extends IRepository<Category, CategoryCondDTO, CategoryUpdateDTO> {}
