@@ -1,66 +1,116 @@
-import { Card, CardContent, CardDescription, CardTitle } from '@components/ui/card';
-import { Button } from '@components/ui/button';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Card, CardContent } from '@components/ui/card';
+import { Badge } from '@components/ui/badge';
+import { ImageOff, Heart, Star } from 'lucide-react';
 import { formatPrice } from '@utils/format';
+import { useAuthStore } from '@store/auth.store';
+import { useLikeStatus, useToggleLike } from '@hooks/useWishlist';
 import type { Product } from '../../types/product';
 
 interface ProductCardProps {
   product: Product;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+function StarRating({ rating }: { rating: number }) {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`h-3.5 w-3.5 ${
+            i < Math.round(rating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const { user } = useAuthStore();
+  const [imageError, setImageError] = useState(false);
+  const image = product.images?.[0];
+
+  const { data: likeStatus } = useLikeStatus(product.id, !!user);
+  const toggleLike = useToggleLike();
+
+  const hasSale = product.salePrice != null && product.salePrice < product.price;
+  const discountPercent = hasSale
+    ? Math.round((1 - (product.salePrice as number) / product.price) * 100)
+    : 0;
+
+  const handleToggleLike = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      toast.info('Please log in to save items to your wishlist');
+      return;
+    }
+    toggleLike.mutate({ productId: product.id, liked: likeStatus?.liked ?? false });
+  };
+
+  return (
+    <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
       <Link to={`/products/${product.id}`}>
-        <div className="relative overflow-hidden bg-muted">
-          <img
-            src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'}
-            alt={product.name}
-            className="h-48 w-full object-cover hover:scale-105 transition-transform"
-          />
-          {product.discount && (
-            <div className="absolute right-2 top-2 bg-destructive px-2 py-1 text-xs font-semibold text-white rounded">
-              -{product.discount}%
+        <div className="relative aspect-square overflow-hidden bg-muted">
+          {image && !imageError ? (
+            <img
+              src={image}
+              alt={product.name}
+              onError={() => setImageError(true)}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-muted">
+              <ImageOff className="h-10 w-10 text-muted-foreground" />
             </div>
           )}
+
+          {hasSale && (
+            <Badge variant="destructive" className="absolute left-2 top-2">
+              -{discountPercent}%
+            </Badge>
+          )}
+
+          <button
+            type="button"
+            onClick={handleToggleLike}
+            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 shadow transition-colors hover:bg-background"
+            aria-label="Toggle wishlist"
+          >
+            <Heart
+              className={`h-4 w-4 ${likeStatus?.liked ? 'fill-destructive text-destructive' : 'text-foreground'}`}
+            />
+          </button>
         </div>
       </Link>
 
       <CardContent className="p-4">
         <Link to={`/products/${product.id}`}>
-          <CardTitle className="line-clamp-2 text-lg hover:text-primary transition-colors">
+          <h3 className="line-clamp-2 text-sm font-medium leading-snug hover:text-primary sm:text-base">
             {product.name}
-          </CardTitle>
+          </h3>
         </Link>
-        <CardDescription className="mt-2 line-clamp-2">
-          {product.description}
-        </CardDescription>
 
-        <div className="mt-4 flex items-baseline justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-bold">{formatPrice(product.price)}</span>
-            {product.cost && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(product.cost)}
-              </span>
-            )}
-          </div>
-          {product.rating && (
-            <span className="text-xs font-semibold text-yellow-500">
-              ⭐ {product.rating.toFixed(1)}
-            </span>
-          )}
+        <div className="mt-2">
+          <StarRating rating={product.rating} />
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <Button className="flex-1" size="sm">
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Add
-          </Button>
-          <Button variant="outline" size="sm" className="px-3">
-            <Heart className="h-4 w-4" />
-          </Button>
+        <div className="mt-3 flex items-baseline gap-2">
+          {hasSale ? (
+            <>
+              <span className="text-lg font-bold text-primary">
+                {formatPrice(product.salePrice as number)}
+              </span>
+              <span className="text-sm text-muted-foreground line-through">
+                {formatPrice(product.price)}
+              </span>
+            </>
+          ) : (
+            <span className="text-lg font-bold">{formatPrice(product.price)}</span>
+          )}
         </div>
       </CardContent>
     </Card>

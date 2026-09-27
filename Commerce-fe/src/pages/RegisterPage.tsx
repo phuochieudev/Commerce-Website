@@ -49,15 +49,28 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                placeholder="John Doe"
-                {...register('fullName')}
-                disabled={isLoading}
-              />
-              {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  placeholder="John"
+                  {...register('firstName')}
+                  disabled={isLoading}
+                />
+                {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  placeholder="Doe"
+                  {...register('lastName')}
+                  disabled={isLoading}
+                />
+                {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
+              </div>
             </div>
 
             <div className="space-y-2">

@@ -6,6 +6,7 @@ import { RegisterCmdHandler } from './usecase/register';
 import { LoginCmdHandler } from './usecase/login';
 import { GetProfileQueryHandler } from './usecase/get-profile';
 import { UpdateProfileCmdHandler } from './usecase/update-profile';
+import { ChangePasswordCmdHandler } from './usecase/change-password';
 import { UserHttpService } from './infras/transport';
 import { authMiddleware } from '../../share/middleware/authentication';
 
@@ -17,12 +18,14 @@ export const setupUserHexagon = (sequelize: Sequelize) => {
   const loginHandler = new LoginCmdHandler(repository);
   const getProfileHandler = new GetProfileQueryHandler(repository);
   const updateProfileHandler = new UpdateProfileCmdHandler(repository);
+  const changePasswordHandler = new ChangePasswordCmdHandler(repository);
 
   const httpService = new UserHttpService(
     registerHandler,
     loginHandler,
     getProfileHandler,
-    updateProfileHandler
+    updateProfileHandler,
+    changePasswordHandler
   );
 
   const router = Router();
@@ -31,6 +34,7 @@ export const setupUserHexagon = (sequelize: Sequelize) => {
   router.post('/auth/login', httpService.loginAPI.bind(httpService));
   router.get('/profile', authMiddleware, httpService.getProfileAPI.bind(httpService));
   router.patch('/profile', authMiddleware, httpService.updateProfileAPI.bind(httpService));
+  router.post('/profile/change-password', authMiddleware, httpService.changePasswordAPI.bind(httpService));
 
   return router;
 };

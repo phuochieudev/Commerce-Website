@@ -26,6 +26,12 @@ export const UpdateProfileDTOSchema = z.object({
 });
 export type UpdateProfileDTO = z.infer<typeof UpdateProfileDTOSchema>;
 
+export const ChangePasswordDTOSchema = z.object({
+  oldPassword: z.string().min(1, 'Old password is required'),
+  newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+});
+export type ChangePasswordDTO = z.infer<typeof ChangePasswordDTOSchema>;
+
 export type UserCondDTO = {
   email?: string;
   status?: string;

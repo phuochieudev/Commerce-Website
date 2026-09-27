@@ -8,6 +8,7 @@ import { GetCategoryDetailQuery } from "./usecase/get-category-detail";
 import { UpdateCategoryCmdHandler } from "./usecase/update-category";
 import { DeleteCategoryCmdHandler } from "./usecase/delete-category";
 import { ListCategoriesQuery } from "./usecase/list-categories";
+import { authMiddleware, adminMiddleware } from "../../share/middleware/authentication";
 
 export const setupCategoryHexagon = (sequelize: Sequelize) => {
   init(sequelize);
@@ -31,6 +32,8 @@ export const setupCategoryHexagon = (sequelize: Sequelize) => {
 
   router.post(
     "/categories",
+    authMiddleware,
+    adminMiddleware,
     httpService.createANewCategoryAPI.bind(httpService)
   );
 
@@ -43,11 +46,15 @@ export const setupCategoryHexagon = (sequelize: Sequelize) => {
 
   router.patch(
     "/categories/:id",
+    authMiddleware,
+    adminMiddleware,
     httpService.updateCategoryAPI.bind(httpService)
   );
 
   router.delete(
     "/categories/:id",
+    authMiddleware,
+    adminMiddleware,
     httpService.deleteCategoryAPI.bind(httpService)
   );
   return router;

@@ -9,6 +9,7 @@ import { UpdateBrandCmdHandler } from "./usecase/update-brand";
 import { DeleteBrandCmdHandler } from "./usecase/delete-brand";
 import { ListBrandQuery } from "./usecase/list-brand";
 import { modelName } from "./model/brand";
+import { authMiddleware, adminMiddleware } from "../../share/middleware/authentication";
 
 export const setupBrandHexagon = (sequelize: Sequelize) => {
   init(sequelize);
@@ -30,11 +31,11 @@ export const setupBrandHexagon = (sequelize: Sequelize) => {
 
   const router = Router();
 
-  router.post("/brands", httpService.createAPI.bind(httpService));
+  router.post("/brands", authMiddleware, adminMiddleware, httpService.createAPI.bind(httpService));
   router.get("/brands/:id", httpService.getDetailAPI.bind(httpService));
   router.get("/brands", httpService.listsAPI.bind(httpService));
-  router.patch("/brands/:id", httpService.updateAPI.bind(httpService));
-  router.delete("/brands/:id", httpService.deleteAPI.bind(httpService));
+  router.patch("/brands/:id", authMiddleware, adminMiddleware, httpService.updateAPI.bind(httpService));
+  router.delete("/brands/:id", authMiddleware, adminMiddleware, httpService.deleteAPI.bind(httpService));
 
   return router;
 };

@@ -35,6 +35,7 @@ export class MYSQLProductRatingRepository implements IProductRatingRepository {
 
   async insert(data: ProductRating): Promise<boolean> {
     await this.sequelize.models[this.modelName].create(data as any);
+    await this.syncProductRating(data.productId);
     return true;
   }
 
@@ -43,6 +44,7 @@ export class MYSQLProductRatingRepository implements IProductRatingRepository {
       { ...data, updated: new Date() } as any,
       { where: { userId, productId } as any }
     );
+    await this.syncProductRating(productId);
     return true;
   }
 
@@ -50,6 +52,16 @@ export class MYSQLProductRatingRepository implements IProductRatingRepository {
     await this.sequelize.models[this.modelName].destroy({
       where: { userId, productId } as any,
     });
+    await this.syncProductRating(productId);
     return true;
+  }
+
+  private async syncProductRating(productId: string): Promise<void> {
+    const [result]: any = await this.sequelize.query(
+      'SELECT AVG(rating) as avgRating FROM product_ratings WHERE product_id = :productId',
+      { replacements: { productId } }
+    );
+    const avgRating = result?.[0]?.avgRating ? Math.round(parseFloat(result[0].avgRating) * 10) / 10 : 0;
+    await this.sequelize.models['Product'].update({ rating: avgRating }, { where: { id: productId } as any });
   }
 }

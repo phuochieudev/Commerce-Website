@@ -5,9 +5,10 @@ import {
   LoginCommand,
   GetProfileQuery,
   UpdateProfileCommand,
+  ChangePasswordCommand,
   AuthResponse,
 } from '../../interface';
-import { RegisterDTOSchema, LoginDTOSchema, UpdateProfileDTOSchema } from '../../model/dto';
+import { RegisterDTOSchema, LoginDTOSchema, UpdateProfileDTOSchema, ChangePasswordDTOSchema } from '../../model/dto';
 import { User } from '../../model/user';
 
 export class UserHttpService {
@@ -15,7 +16,8 @@ export class UserHttpService {
     private readonly registerHandler: ICommandHandler<RegisterCommand, AuthResponse>,
     private readonly loginHandler: ICommandHandler<LoginCommand, AuthResponse>,
     private readonly getProfileHandler: IQueryHandler<GetProfileQuery, Omit<User, 'password' | 'salt'>>,
-    private readonly updateProfileHandler: ICommandHandler<UpdateProfileCommand, void>
+    private readonly updateProfileHandler: ICommandHandler<UpdateProfileCommand, void>,
+    private readonly changePasswordHandler: ICommandHandler<ChangePasswordCommand, void>
   ) {}
 
   async registerAPI(req: Request, res: Response) {
@@ -68,6 +70,22 @@ export class UserHttpService {
       }
 
       await this.updateProfileHandler.execute({ userId: requester.userId, dto: data });
+      res.status(200).json({ data: true });
+    } catch (error) {
+      res.status(400).json({ message: (error as Error).message });
+    }
+  }
+
+  async changePasswordAPI(req: Request, res: Response) {
+    try {
+      const requester = (req as any).requester;
+      const { success, data, error } = ChangePasswordDTOSchema.safeParse(req.body);
+      if (!success) {
+        res.status(400).json({ message: error.message });
+        return;
+      }
+
+      await this.changePasswordHandler.execute({ userId: requester.userId, dto: data });
       res.status(200).json({ data: true });
     } catch (error) {
       res.status(400).json({ message: (error as Error).message });

@@ -14,6 +14,11 @@ export class MYSQLUserRepository extends BaseRepositorySequelize<User, UserCondD
       new MYSQLUserCommandRepository(sequelize, modelName)
     );
   }
+
+  async updatePassword(id: string, password: string, salt: string): Promise<boolean> {
+    await this.sequelize.models[this.modelName].update({ password, salt }, { where: { id } });
+    return true;
+  }
 }
 
 export class MYSQLUserQueryRepository extends BaseQueryRepositorySequelize<User, UserCondDTO> {

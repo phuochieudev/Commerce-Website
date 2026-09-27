@@ -19,9 +19,17 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor for error handling
+// Response interceptor: unwrap the backend's `{ data: ... }` envelope for
+// single-item responses so services can use `response.data` directly.
+// List endpoints (`{ data, paging, ... }`) are left untouched.
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const body = response.data;
+    if (body && typeof body === 'object' && 'data' in body && !('paging' in body)) {
+      response.data = body.data;
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orderService } from '@services/order.service';
+import { OrderStatus, PaymentStatus } from '../types/order';
 import { toast } from 'sonner';
 
 export const useOrders = (page = 1, limit = 10) => {
@@ -41,6 +42,30 @@ export const useCancelOrder = () => {
     },
     onError: () => {
       toast.error('Failed to cancel order');
+    },
+  });
+};
+
+export const useUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+      paymentStatus,
+      trackingNumber,
+    }: {
+      id: string;
+      status: OrderStatus;
+      paymentStatus?: PaymentStatus;
+      trackingNumber?: string;
+    }) => orderService.updateStatus(id, status, paymentStatus, trackingNumber),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('Order status updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update order status');
     },
   });
 };

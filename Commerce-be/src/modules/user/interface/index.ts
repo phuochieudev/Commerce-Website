@@ -1,8 +1,10 @@
 import { IRepository } from '../../../share/interface';
 import { User } from '../model/user';
-import { UpdateProfileDTO, UserCondDTO } from '../model/dto';
+import { UpdateProfileDTO, UserCondDTO, ChangePasswordDTO } from '../model/dto';
 
-export interface IUserRepository extends IRepository<User, UserCondDTO, UpdateProfileDTO> {}
+export interface IUserRepository extends IRepository<User, UserCondDTO, UpdateProfileDTO> {
+  updatePassword(id: string, password: string, salt: string): Promise<boolean>;
+}
 
 export interface RegisterCommand {
   dto: {
@@ -27,6 +29,11 @@ export interface GetProfileQuery {
 export interface UpdateProfileCommand {
   userId: string;
   dto: UpdateProfileDTO;
+}
+
+export interface ChangePasswordCommand {
+  userId: string;
+  dto: ChangePasswordDTO;
 }
 
 export interface AuthResponse {

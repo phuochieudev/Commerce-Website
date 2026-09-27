@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ErrBrandNameTooShort } from "./errors";
 
 export const BrandCreateDTOSchema = z.object({
-    name: z.string().min(2, ErrBrandNameTooShort.message).optional(),
+    name: z.string().min(2, ErrBrandNameTooShort.message),
     image: z.string().optional(),
     description: z.string().optional(),
     tagLine: z.string().optional(),

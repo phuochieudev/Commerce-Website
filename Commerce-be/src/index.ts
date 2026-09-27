@@ -1,5 +1,6 @@
 import 'module-alias/register';
 import express, {Request, Response} from "express";
+import cors from "cors";
 import { config } from "dotenv";
 import * as swaggerUi from 'swagger-ui-express';
 import { setupCategoryHexagon } from "@modules/category";
@@ -15,6 +16,7 @@ import { setupImageHexagon } from "@modules/image";
 import { setupCouponHexagon } from "@modules/coupon";
 import { setupUserAddressHexagon } from "@modules/user-address";
 import { setupProductVariantHexagon } from "@modules/product-variant";
+import { setupAdminHexagon } from "@modules/admin";
 import { MYSQLProductRepository } from "@modules/product/infras/repository/sequelize";
 import { modelName as productModelName } from "@modules/product/infras/repository/sequelize/dto";
 import { buildSwaggerDocument } from '@share/transport/swagger';
@@ -27,6 +29,10 @@ config();
   const app = express();
   const port = process.env.PORT || 3000;
 
+  const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
+  app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
 
   app.get("/", (req: Request, res: Response) => {
@@ -54,7 +60,7 @@ config();
   app.use('/v1', setupBrandHexagon(sequelize));
   app.use('/v1', setupUserHexagon(sequelize));
   app.use('/v1', setupProductHexagon(sequelize));
-  app.use('/v1', setupCartHexagon(sequelize));
+  app.use('/v1', setupCartHexagon(sequelize, productRepository));
   app.use('/v1', setupOrderHexagon(sequelize, productRepository, couponServiceForOrder));
   app.use('/v1', setupProductLikeHexagon(sequelize));
   app.use('/v1', setupProductRatingHexagon(sequelize));
@@ -62,6 +68,7 @@ config();
   app.use('/v1', couponSetup.router);
   app.use('/v1', setupUserAddressHexagon(sequelize));
   app.use('/v1', setupProductVariantHexagon(sequelize));
+  app.use('/v1', setupAdminHexagon(sequelize));
 
   // const swaggerDocument = buildSwaggerDocument(port);
   // app.get('/swagger.json', (req, res) => {

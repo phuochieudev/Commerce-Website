@@ -33,11 +33,17 @@ export const ProductUpdateDTOSchema = z.object({
 });
 export type ProductUpdateDTO = z.infer<typeof ProductUpdateDTOSchema>;
 
+export const ProductSortSchema = z.enum(['newest', 'price_asc', 'price_desc', 'rating_desc']).optional();
+export type ProductSort = z.infer<typeof ProductSortSchema>;
+
 export const ProductCondDTOSchema = z.object({
   name: z.string().optional(),
   gender: z.nativeEnum(ProductGender).optional(),
   brandId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
   status: z.nativeEnum(ModelStatus).optional(),
+  priceMin: z.coerce.number().min(0).optional(),
+  priceMax: z.coerce.number().min(0).optional(),
+  sort: ProductSortSchema,
 });
 export type ProductCondDTO = z.infer<typeof ProductCondDTOSchema>;

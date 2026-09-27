@@ -3,12 +3,12 @@ import { User, LoginCredentials, RegisterCredentials } from '../types/auth';
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    const response = await apiClient.post<{ token: string; user: User }>('/users/login', credentials);
+    const response = await apiClient.post<{ token: string; user: User }>('/auth/login', credentials);
     return response.data;
   },
 
   register: async (credentials: RegisterCredentials) => {
-    const response = await apiClient.post<{ token: string; user: User }>('/users/register', credentials);
+    const response = await apiClient.post<{ token: string; user: User }>('/auth/register', credentials);
     return response.data;
   },
 
@@ -17,16 +17,16 @@ export const authService = {
   },
 
   getProfile: async () => {
-    const response = await apiClient.get<User>('/users/me');
+    const response = await apiClient.get<User>('/profile');
     return response.data;
   },
 
   updateProfile: async (data: Partial<User>) => {
-    const response = await apiClient.patch<User>('/users/me', data);
+    const response = await apiClient.patch<User>('/profile', data);
     return response.data;
   },
 
   changePassword: async (oldPassword: string, newPassword: string) => {
-    await apiClient.post('/users/change-password', { oldPassword, newPassword });
+    await apiClient.post('/profile/change-password', { oldPassword, newPassword });
   },
 };

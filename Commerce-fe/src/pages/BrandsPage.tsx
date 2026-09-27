@@ -13,7 +13,7 @@ export default function BrandsPage() {
   const { data, isLoading } = useBrands(page, limit);
 
   const totalPages = useMemo(() => {
-    return data ? Math.ceil(data.total / limit) : 0;
+    return data ? Math.ceil(data.paging.total / limit) : 0;
   }, [data]);
 
   return (

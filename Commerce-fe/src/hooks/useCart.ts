@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartService } from '@services/cart.service';
+import { CartItem } from '../types/cart';
 import { toast } from 'sonner';
 
 export const useCart = () => {
@@ -12,14 +13,14 @@ export const useCart = () => {
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ productId, quantity, variantId }: any) =>
-      cartService.addItem(productId, quantity, variantId),
+    mutationFn: ({ productId, attribute, quantity }: { productId: string; attribute: string; quantity: number }) =>
+      cartService.addItem(productId, attribute, quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Added to cart');
+      toast.success('Đã thêm vào giỏ hàng');
     },
     onError: () => {
-      toast.error('Failed to add to cart');
+      toast.error('Không thể thêm vào giỏ hàng');
     },
   });
 };
@@ -55,13 +56,12 @@ export const useRemoveFromCart = () => {
 export const useClearCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => cartService.clearCart(),
+    mutationFn: (items: CartItem[]) => cartService.clearCart(items),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Cart cleared');
     },
     onError: () => {
-      toast.error('Failed to clear cart');
+      toast.error('Không thể xóa giỏ hàng');
     },
   });
 };

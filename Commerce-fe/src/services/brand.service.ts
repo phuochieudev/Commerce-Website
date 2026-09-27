@@ -3,9 +3,10 @@ import { Brand } from '../types/brand';
 
 export const brandService = {
   getAll: async (page = 1, limit = 20) => {
-    const response = await apiClient.get<{ data: Brand[]; total: number }>('/brands', {
-      params: { page, limit },
-    });
+    const response = await apiClient.get<{ data: Brand[]; paging: { page: number; limit: number; total: number } }>(
+      '/brands',
+      { params: { page, limit } }
+    );
     return response.data;
   },
 

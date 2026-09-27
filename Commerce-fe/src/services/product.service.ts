@@ -1,10 +1,10 @@
 import { apiClient } from './api';
-import { Product, ProductListResponse } from '../types/product';
+import { Product, ProductListResponse, ProductFilter } from '../types/product';
 
 export const productService = {
-  getAll: async (page = 1, limit = 20) => {
+  getAll: async (page = 1, limit = 20, filter: ProductFilter = {}) => {
     const response = await apiClient.get<ProductListResponse>('/products', {
-      params: { page, limit },
+      params: { page, limit, ...filter },
     });
     return response.data;
   },
@@ -16,7 +16,7 @@ export const productService = {
 
   search: async (keyword: string, page = 1, limit = 20) => {
     const response = await apiClient.get<ProductListResponse>('/products', {
-      params: { name: keyword, page, limit },
+      params: { page, limit, name: keyword },
     });
     return response.data;
   },

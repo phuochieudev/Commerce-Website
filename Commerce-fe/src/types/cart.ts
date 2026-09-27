@@ -1,18 +1,13 @@
-import { BaseEntity } from './common';
+import { Product } from './product';
 
+// The backend has no "Cart" aggregate — each row IS one cart line item.
 export interface CartItem {
   id: string;
-  productId: string;
-  variantId?: string;
-  quantity: number;
-  price: number;
-  discount?: number;
-  product?: any;
-}
-
-export interface Cart extends BaseEntity {
   userId: string;
-  items: CartItem[];
-  total: number;
-  discount?: number;
+  productId: string;
+  attribute: string;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+  product?: Product | null;
 }

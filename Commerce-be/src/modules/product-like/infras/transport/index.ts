@@ -3,6 +3,7 @@ import { ICommandHandler, IQueryHandler } from '../../../../share/interface';
 import { PagingDTOSchema } from '../../../../share/model/paging';
 import { LikeProductCommand, UnlikeProductCommand, ListLikedProductsQuery } from '../../interface';
 import { ProductLike } from '../../model/product-like';
+import { GetLikeStatusQuery, LikeStatus } from '../../usecase/get-like-status';
 import { z } from 'zod';
 
 const ProductIdParamSchema = z.object({
@@ -13,8 +14,24 @@ export class ProductLikeHttpService {
   constructor(
     private readonly likeHandler: ICommandHandler<LikeProductCommand, void>,
     private readonly unlikeHandler: ICommandHandler<UnlikeProductCommand, void>,
-    private readonly listHandler: IQueryHandler<ListLikedProductsQuery, ProductLike[]>
+    private readonly listHandler: IQueryHandler<ListLikedProductsQuery, ProductLike[]>,
+    private readonly likeStatusHandler: IQueryHandler<GetLikeStatusQuery, LikeStatus>
   ) {}
+
+  async likeStatusAPI(req: Request, res: Response) {
+    try {
+      const requester = (req as any).requester;
+      const { success, data, error } = ProductIdParamSchema.safeParse(req.params);
+      if (!success) {
+        res.status(400).json({ message: error.message });
+        return;
+      }
+      const result = await this.likeStatusHandler.query({ userId: requester.userId, productId: data.productId });
+      res.status(200).json({ data: result });
+    } catch (error) {
+      res.status(400).json({ message: (error as Error).message });
+    }
+  }
 
   async likeAPI(req: Request, res: Response) {
     try {

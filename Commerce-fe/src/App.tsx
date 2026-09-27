@@ -13,8 +13,10 @@ import ProductDetailPage from '@pages/ProductDetailPage';
 import LoginPage from '@pages/LoginPage';
 import RegisterPage from '@pages/RegisterPage';
 import CartPage from '@pages/CartPage';
+import CheckoutPage from '@pages/CheckoutPage';
 import ProfilePage from '@pages/ProfilePage';
 import OrdersPage from '@pages/OrdersPage';
+import OrderDetailPage from '@pages/OrderDetailPage';
 import BrandsPage from '@pages/BrandsPage';
 import CategoriesPage from '@pages/CategoriesPage';
 
@@ -22,6 +24,9 @@ import CategoriesPage from '@pages/CategoriesPage';
 import AdminDashboard from '@pages/admin/AdminDashboard';
 import AdminProductsPage from '@pages/admin/AdminProductsPage';
 import AdminBrandsPage from '@pages/admin/AdminBrandsPage';
+import AdminCategoriesPage from '@pages/admin/AdminCategoriesPage';
+import AdminOrdersPage from '@pages/admin/AdminOrdersPage';
+import AdminCouponsPage from '@pages/admin/AdminCouponsPage';
 
 export default function App() {
   return (
@@ -41,6 +46,14 @@ export default function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <ProtectedRoute>
@@ -56,6 +69,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/orders/:id" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />
           </Route>
 
           {/* Admin Routes */}
@@ -70,6 +84,9 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProductsPage />} />
             <Route path="brands" element={<AdminBrandsPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="coupons" element={<AdminCouponsPage />} />
           </Route>
 
           {/* Catch all */}

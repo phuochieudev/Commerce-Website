@@ -4,5 +4,6 @@ export interface Category extends BaseEntity {
   name: string;
   image?: string;
   description?: string;
-  parentId?: string;
+  parentId?: string | null;
+  children?: Category[];
 }

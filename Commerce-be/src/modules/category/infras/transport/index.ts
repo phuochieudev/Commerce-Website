@@ -55,7 +55,7 @@ export class CategoryHttpService {
     async listCategoriesAPI(req: Request, res: Response) {
       const pagging = {
         page: 1,
-        limit: 10,
+        limit: 200,
       };
 
       const cond = CategoryCondDTOSchema.parse(req.query);

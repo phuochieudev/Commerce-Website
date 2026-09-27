@@ -20,6 +20,7 @@ export class CreateRatingCmdHandler implements ICommandHandler<CreateRatingComma
     await this.repository.insert({
       userId: command.userId,
       productId: command.productId,
+      rating: data.rating,
       content: data.content,
       createdAt: new Date(),
     });

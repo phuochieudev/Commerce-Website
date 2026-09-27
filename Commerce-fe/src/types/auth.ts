@@ -1,9 +1,14 @@
 import { BaseEntity } from './common';
 
+export type UserGender = 'male' | 'female' | 'unknown';
+
 export interface User extends BaseEntity {
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
+  address?: string;
+  gender?: UserGender;
   avatar?: string;
   role: 'user' | 'admin';
 }
@@ -14,7 +19,8 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials extends LoginCredentials {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
 }
 

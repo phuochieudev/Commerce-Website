@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '@services/product.service';
+import { ProductFilter } from '../types/product';
 import { toast } from 'sonner';
 
-export const useProducts = (page = 1, limit = 20) => {
+export const useProducts = (page = 1, limit = 20, filter: ProductFilter = {}) => {
   return useQuery({
-    queryKey: ['products', page, limit],
-    queryFn: () => productService.getAll(page, limit),
+    queryKey: ['products', page, limit, filter],
+    queryFn: () => productService.getAll(page, limit, filter),
   });
 };
 

@@ -8,15 +8,16 @@ import { RemoveCartItemCmdHandler } from './usecase/remove-cart-item';
 import { ListCartQueryHandler } from './usecase/list-cart';
 import { CartHttpService } from './infras/transport';
 import { authMiddleware } from '../../share/middleware/authentication';
+import { IQueryRepository } from '../../share/interface';
 
-export const setupCartHexagon = (sequelize: Sequelize) => {
+export const setupCartHexagon = (sequelize: Sequelize, productRepository?: IQueryRepository<any, any>) => {
   init(sequelize);
 
   const repository = new MYSQLCartRepository(sequelize, modelName);
   const addToCartHandler = new AddToCartCmdHandler(repository);
   const updateCartHandler = new UpdateCartCmdHandler(repository);
   const removeCartItemHandler = new RemoveCartItemCmdHandler(repository);
-  const listCartHandler = new ListCartQueryHandler(repository);
+  const listCartHandler = new ListCartQueryHandler(repository, productRepository);
 
   const httpService = new CartHttpService(
     addToCartHandler,

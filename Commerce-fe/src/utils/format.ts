@@ -1,12 +1,12 @@
 export const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'VND',
   }).format(price);
 };
 
 export const formatDate = (date: string | Date) => {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat('vi-VN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
