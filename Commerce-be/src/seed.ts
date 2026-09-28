@@ -1,4 +1,4 @@
-import 'module-alias/register';
+import "./module-alias-bootstrap";
 import { config } from 'dotenv';
 import { v7 as uuid } from 'uuid';
 import { sequelize } from '@share/component/sequelize';
@@ -94,17 +94,18 @@ async function seed() {
   initProductRating(sequelize);
   initUserAddress(sequelize);
 
+  // Creates any tables that don't exist yet based on the Sequelize model definitions above
+  await sequelize.sync();
+
   // Reset tables so the script is safely re-runnable without duplicate/unique-key errors
-  await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
   const tablesToReset = [
     'order_items', 'orders', 'product_likes', 'product_ratings', 'carts',
     'user_addresses', 'coupons', 'product_variants', 'images', 'products',
     'users', 'brands', 'categories',
   ];
   for (const table of tablesToReset) {
-    await sequelize.query(`TRUNCATE TABLE ${table}`);
+    await sequelize.query(`TRUNCATE TABLE ${table} CASCADE`);
   }
-  await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
   console.log('Cleared existing data from all seeded tables');
 
   // 1. Categories (a few parents + children)
@@ -410,8 +411,8 @@ async function seed() {
   console.log(`Seeded ${ratings.length} product ratings`);
 
   await sequelize.query(
-    `UPDATE products p
-     SET p.rating = COALESCE((SELECT ROUND(AVG(pr.rating), 1) FROM product_ratings pr WHERE pr.product_id = p.id), 0)`
+    `UPDATE products
+     SET rating = COALESCE((SELECT ROUND(AVG(pr.rating), 1) FROM product_ratings pr WHERE pr.product_id = products.id), 0)`
   );
 
   // 12. Orders + order items

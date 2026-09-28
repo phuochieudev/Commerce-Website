@@ -9,7 +9,7 @@ export function init(sequelize: Sequelize) {
     {
       userId: { type: DataTypes.STRING, field: 'user_id', primaryKey: true },
       productId: { type: DataTypes.STRING, field: 'product_id', primaryKey: true },
-      rating: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 5 },
+      rating: { type: DataTypes.SMALLINT, allowNull: false, defaultValue: 5 },
       content: { type: DataTypes.TEXT, allowNull: true },
       createdAt: { type: DataTypes.DATE(6), field: 'created_at', allowNull: true },
       updated: { type: DataTypes.DATE(6), field: 'updated', allowNull: true },

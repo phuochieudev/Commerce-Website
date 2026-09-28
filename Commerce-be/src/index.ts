@@ -1,4 +1,4 @@
-import 'module-alias/register';
+import "./module-alias-bootstrap";
 import express, {Request, Response} from "express";
 import cors from "cors";
 import { config } from "dotenv";
@@ -69,6 +69,9 @@ config();
   app.use('/v1', setupUserAddressHexagon(sequelize));
   app.use('/v1', setupProductVariantHexagon(sequelize));
   app.use('/v1', setupAdminHexagon(sequelize));
+
+  // Creates any tables that don't exist yet based on the Sequelize model definitions above
+  await sequelize.sync();
 
   // const swaggerDocument = buildSwaggerDocument(port);
   // app.get('/swagger.json', (req, res) => {
