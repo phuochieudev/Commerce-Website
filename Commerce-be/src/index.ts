@@ -73,14 +73,14 @@ config();
   // Creates any tables that don't exist yet based on the Sequelize model definitions above
   await sequelize.sync();
 
-  // const swaggerDocument = buildSwaggerDocument(port);
-  // app.get('/swagger.json', (req, res) => {
-  //   res.json(swaggerDocument);
-  // });
-  // app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  const swaggerDocument = buildSwaggerDocument(port);
+  app.get('/swagger.json', (req, res) => {
+    res.json(swaggerDocument);
+  });
+  app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => {
     console.log(`Server is running on port http://localhost:${port}`);
-    //console.log(`Swagger UI available at http://localhost:${port}/swagger`);
+    console.log(`Swagger UI available at http://localhost:${port}/swagger`);
   });
 })();
