@@ -88,7 +88,7 @@ export default function AdminDashboard() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-9 w-48" />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-28 w-full" />
           ))}
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
       <h1 className="text-3xl font-bold">Dashboard</h1>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {statCards.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="pt-6">
