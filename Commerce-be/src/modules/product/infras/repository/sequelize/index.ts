@@ -34,7 +34,7 @@ export class MYSQLProductQueryRepository extends BaseQueryRepositorySequelize<Pr
     const { name, priceMin, priceMax, sort, gender, brandId, categoryId } = cond;
 
     const where: any = { status: { [Op.ne]: ModelStatus.DELETED } };
-    if (name) where.name = { [Op.like]: `%${name}%` };
+    if (name) where.name = { [Op.iLike]: `%${name}%` };
     if (gender) where.gender = gender;
     if (brandId) where.brandId = brandId;
     if (categoryId) where.categoryId = categoryId;

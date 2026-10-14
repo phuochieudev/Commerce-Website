@@ -30,8 +30,10 @@ function readModuleRouteDefs(modulesDir: string): RouteDef[] {
     .map((entry) => entry.name);
 
   for (const moduleDir of moduleDirs) {
-    const indexFile = path.join(modulesDir, moduleDir, 'index.ts');
-    if (!fs.existsSync(indexFile)) {
+    const indexFile = ['index.ts', 'index.js']
+      .map((file) => path.join(modulesDir, moduleDir, file))
+      .find((file) => fs.existsSync(file));
+    if (!indexFile) {
       continue;
     }
 
@@ -68,7 +70,7 @@ function openApiPath(routePath: string): string {
 }
 
 export function buildSwaggerDocument(port: string | number) {
-  const modulesDir = path.resolve(process.cwd(), 'src/modules');
+  const modulesDir = path.resolve(__dirname, '../../modules');
   const routes = readModuleRouteDefs(modulesDir);
 
   const paths: Record<string, Record<string, unknown>> = {};
@@ -122,8 +124,8 @@ export function buildSwaggerDocument(port: string | number) {
     },
     servers: [
       {
-        url: `http://localhost:${port}`,
-        description: 'Local development',
+        url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`,
+        description: process.env.RENDER_EXTERNAL_URL ? 'Deployed API' : 'Local development',
       },
     ],
     components: {
