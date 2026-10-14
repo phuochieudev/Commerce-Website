@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@components/ui/button';
-import { BarChart3, ShoppingBag, Package, Users, LogOut, FolderTree, ClipboardList, Ticket } from 'lucide-react';
+import { BarChart3, ShoppingBag, Package, LogOut, FolderTree, ClipboardList, Ticket } from 'lucide-react';
 import { useAuthStore } from '@store/auth.store';
 
 interface SidebarProps {
@@ -21,7 +21,6 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
     { path: '/admin/categories', label: 'Categories', icon: FolderTree },
     { path: '/admin/orders', label: 'Orders', icon: ClipboardList },
     { path: '/admin/coupons', label: 'Coupons', icon: Ticket },
-    { path: '/admin/users', label: 'Users', icon: Users },
   ];
 
   return (
