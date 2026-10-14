@@ -49,28 +49,28 @@ export class GetDashboardStatsQueryHandler implements IQueryHandler<{}, Dashboar
     )) as any;
 
     const [revenueByDayRows] = (await s.query(
-      `SELECT DATE(created_at) as date, COALESCE(SUM(total_amount), 0) as revenue
+      `SELECT TO_CHAR(created_at, 'YYYY-MM-DD') AS date, COALESCE(SUM(total_amount), 0) AS revenue
        FROM orders
-       WHERE status != 'cancelled' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-       GROUP BY DATE(created_at)
+       WHERE status != 'cancelled' AND created_at >= CURRENT_DATE - INTERVAL '6 days'
+       GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
        ORDER BY date ASC`
     )) as any;
 
     const [recentOrdersRows] = (await s.query(
-      `SELECT id, recipient_first_name as recipientFirstName, recipient_last_name as recipientLastName,
-              total_amount as totalAmount, status, created_at as createdAt
+      `SELECT id, recipient_first_name AS "recipientFirstName", recipient_last_name AS "recipientLastName",
+              total_amount AS "totalAmount", status, created_at AS "createdAt"
        FROM orders
        ORDER BY created_at DESC
        LIMIT 5`
     )) as any;
 
     const [topProductsRows] = (await s.query(
-      `SELECT p.id, p.name, p.price, COALESCE(SUM(oi.quantity), 0) as totalSold
+      `SELECT p.id, p.name, p.price, COALESCE(SUM(oi.quantity), 0) AS "totalSold"
        FROM products p
        LEFT JOIN order_items oi ON oi.product_id = p.id
        WHERE p.status != 'deleted'
        GROUP BY p.id, p.name, p.price
-       ORDER BY totalSold DESC
+       ORDER BY "totalSold" DESC
        LIMIT 5`
     )) as any;
 
