@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
-import { LogOut, Menu, Package, Search, ShoppingBag, User } from 'lucide-react';
+import { LayoutDashboard, LogOut, Menu, Package, Search, ShoppingBag, User } from 'lucide-react';
 import { getInitials } from '@utils/format';
 
 const navLinks = [
@@ -81,6 +81,15 @@ export default function Header() {
                   >
                     {user.firstName} {user.lastName}
                   </Link>
+                  {user.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setMobileOpen(false)}
+                      className="text-sm font-medium"
+                    >
+                      Admin dashboard
+                    </Link>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -183,6 +192,13 @@ export default function Header() {
                     <Package className="mr-2 h-4 w-4" /> Orders
                   </Link>
                 </DropdownMenuItem>
+                {user.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="cursor-pointer">
+                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={logout}
