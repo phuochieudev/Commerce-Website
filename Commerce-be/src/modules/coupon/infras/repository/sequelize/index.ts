@@ -35,7 +35,7 @@ export class MYSQLCouponRepository implements ICouponRepository {
   async list(cond: CouponCondDTO, paging: PagingDTO): Promise<Coupon[]> {
     const { page, limit } = paging;
     const where: any = { status: { [Op.ne]: ModelStatus.DELETED } };
-    if (cond.code) where.code = { [Op.like]: `%${cond.code}%` };
+    if (cond.code) where.code = { [Op.iLike]: `%${cond.code}%` };
     if (cond.status) where.status = cond.status;
 
     const rows = await this.sequelize.models[this.modelName].findAll({
@@ -49,7 +49,7 @@ export class MYSQLCouponRepository implements ICouponRepository {
 
   async count(cond: CouponCondDTO): Promise<number> {
     const where: any = { status: { [Op.ne]: ModelStatus.DELETED } };
-    if (cond.code) where.code = { [Op.like]: `%${cond.code}%` };
+    if (cond.code) where.code = { [Op.iLike]: `%${cond.code}%` };
     if (cond.status) where.status = cond.status;
     return await this.sequelize.models[this.modelName].count({ where });
   }

@@ -58,7 +58,7 @@ export class MYSQLProductRatingRepository implements IProductRatingRepository {
 
   private async syncProductRating(productId: string): Promise<void> {
     const [result]: any = await this.sequelize.query(
-      'SELECT AVG(rating) as avgRating FROM product_ratings WHERE product_id = :productId',
+      'SELECT AVG(rating) AS "avgRating" FROM product_ratings WHERE product_id = :productId',
       { replacements: { productId } }
     );
     const avgRating = result?.[0]?.avgRating ? Math.round(parseFloat(result[0].avgRating) * 10) / 10 : 0;
